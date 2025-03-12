@@ -30,10 +30,9 @@ export const useFilters = (data) => {
   };
 
   const clearAllFilters = () => {
-    const query = searchParams.get("query");
     const newParams = new URLSearchParams();
-    if (query) {
-      newParams.set("query", query);
+    if (searchParams.has("query")) {
+      newParams.set("query", searchParams.get("query"));
     }
     setSearchParams(newParams);
   };
