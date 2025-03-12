@@ -1,17 +1,25 @@
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from "react-router-dom";
 
-export const useFilters = (data) => {
+export const useFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const filterList = data?.filter_list || [];
+  // Extract selected filters from URL params
+  const selectedFilters = Object.fromEntries(
+    Array.from(searchParams.entries()).filter(
+      ([key]) => key !== "query" && key !== "page"
+    )
+  );
 
+  // ✅ Handle Checkbox Change (Preserve filters)
   const handleCheckboxChange = (category, value) => {
     const newParams = new URLSearchParams(searchParams);
     const currentValues = newParams.getAll(category);
 
     if (currentValues.includes(value)) {
       newParams.delete(category);
-      currentValues.filter((v) => v !== value).forEach((v) => newParams.append(category, v));
+      currentValues
+        .filter((v) => v !== value)
+        .forEach((v) => newParams.append(category, v));
     } else {
       newParams.append(category, value);
     }
@@ -19,66 +27,39 @@ export const useFilters = (data) => {
     setSearchParams(newParams);
   };
 
-  const getCheckedValues = (category) => searchParams.getAll(category);
-
-  const removeFilter = (category, value) => {
+  // ✅ Handle Price Change (Preserve existing filters)
+  const handlePriceChange = (min, max) => {
     const newParams = new URLSearchParams(searchParams);
-    const currentValues = newParams.getAll(category);
-    newParams.delete(category);
-    currentValues.filter((v) => v !== value).forEach((v) => newParams.append(category, v));
+
+    // Preserve existing filters
+    for (const [key, value] of searchParams.entries()) {
+      if (key !== "min_price" && key !== "max_price") {
+        newParams.append(key, value);
+      }
+    }
+
+    // Update price range
+    if (min !== null) newParams.set("min_price", min);
+    if (max !== null) newParams.set("max_price", max);
+
     setSearchParams(newParams);
   };
 
+  // ✅ Clear All Filters (Except query)
   const clearAllFilters = () => {
     const newParams = new URLSearchParams();
-    if (searchParams.has("query")) {
+    if (searchParams.get("query")) {
       newParams.set("query", searchParams.get("query"));
     }
     setSearchParams(newParams);
   };
 
-  const isAccordionExpanded = (category) => searchParams.has(`expand-${category}`);
-
-  const toggleAccordionState = (category) => {
-    const newParams = new URLSearchParams(searchParams);
-    filterList.forEach((filter) => {
-      if (filter.name !== category) newParams.delete(`expand-${filter.name}`);
-    });
-
-    if (newParams.has(`expand-${category}`)) {
-      newParams.delete(`expand-${category}`);
-    } else {
-      newParams.append(`expand-${category}`, 'true');
-    }
-
-    setSearchParams(newParams);
-  };
-
-  const filterOptionsBySearch = (category, query) => {
-    const filterData = filterList.find((filter) => filter.name === category);
-    if (!filterData) return [];
-
-    return filterData.options.filter((option) =>
-      option.label.toLowerCase().includes(query.toLowerCase())
-    );
-  };
-
-  const selectedFilters = filterList.flatMap((filter) =>
-    getCheckedValues(filter.name).map((value) => {
-      const label = filter.options.find((option) => option.value === value)?.label;
-      return { category: filter.name, label, value };
-    })
-  );
-
   return {
-    searchParams,
     selectedFilters,
     handleCheckboxChange,
-    getCheckedValues,
-    removeFilter,
+    handlePriceChange,
     clearAllFilters,
-    isAccordionExpanded,
-    toggleAccordionState,
-    filterOptionsBySearch,
+    searchParams,
+    setSearchParams,
   };
 };

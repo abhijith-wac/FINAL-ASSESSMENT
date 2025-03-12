@@ -1,13 +1,15 @@
 import useSWR from "swr";
 import { useSearchParams } from "react-router-dom";
 
-const fetcher = async ([url, query, filters]) => {
+const fetcher = async ([url, query, filter]) => {
   const requestBody = {
     search: query,
     size: 80,
     sort_by: "1",
-    ...filters,
+    filter: filter ? JSON.parse(filter) : {}, // Ensure filter is an object
   };
+
+  console.log("✅ API Request Body:", JSON.stringify(requestBody));
 
   const response = await fetch(url, {
     method: "POST",
@@ -19,32 +21,27 @@ const fetcher = async ([url, query, filters]) => {
     body: JSON.stringify(requestBody),
   });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Failed to fetch data");
-  }
-
   return response.json();
 };
 
 const useSearch = () => {
   const [searchParams] = useSearchParams();
-
   const query = searchParams.get("query") || "";
-  const page = parseInt(searchParams.get("page")) || 1;
 
-  const filters = {};
+  const filter = {};
   searchParams.forEach((value, key) => {
     if (key !== "query" && key !== "page") {
-      filters[key] = value;
+      filter[key] = filter[key] ? [...filter[key], value] : [value];
     }
   });
 
-  const key = [import.meta.env.VITE_API_URL, query, filters];
+  const key = query || Object.keys(filter).length ? [import.meta.env.VITE_API_URL, query, JSON.stringify(filter)] : null;
+
+  console.log("🔑 SWR Key:", key);
 
   return useSWR(key, fetcher, {
     revalidateOnFocus: false,
-    keepPreviousData: true, 
+    keepPreviousData: true,
   });
 };
 
