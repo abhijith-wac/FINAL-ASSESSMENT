@@ -1,0 +1,89 @@
+
+.selected-filters {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .selected-filters h3 {
+    margin-top: 0;
+  }
+  
+  .selected-filters div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .selected-filters .filter-box {
+    margin: 5px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f4f4f4;
+  }
+  
+  .selected-filters .filter-box button {
+    margin-left: 5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 0 6px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .selected-filters .clear-button {
+    margin-top: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  /* Style for the filter option containers */
+  .filter-option-container button {
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 5px;
+  }
+  
+  .filter-option-container div {
+    padding-left: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .filter-option-container input[type="text"] {
+    padding: 5px;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+  
+  .filter-option-container label {
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  .filter-option-container .show-more-button {
+    margin-top: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
