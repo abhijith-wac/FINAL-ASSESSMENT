@@ -6,7 +6,7 @@ const fetcher = async ([url, query, filter]) => {
     search: query,
     size: 80,
     sort_by: "1",
-    filter: filter ? JSON.parse(filter) : {}, // Ensure filter is an object
+    filter: filter ? JSON.parse(filter) : {}, 
   };
 
   console.log("✅ API Request Body:", JSON.stringify(requestBody));
