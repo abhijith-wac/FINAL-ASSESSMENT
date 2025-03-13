@@ -4,6 +4,7 @@ import { useFilters } from "../customHooks/useFilter";
 
 const FilterSidebar = ({ filterList }) => {
   const {
+    selectedFilters,
     handleCheckboxChange,
     handlePriceChange,
     searchParams,
@@ -20,8 +21,43 @@ const FilterSidebar = ({ filterList }) => {
     }));
   };
 
+  console.log(selectedFilters);
+
+  // Render selected filters as a list
+  const renderSelectedFilters = () => {
+    const selectedFilterItems = Object.keys(selectedFilters).map((filterKey) => {
+      const selectedValues = selectedFilters[filterKey];
+  
+      // Ensure selectedValues is an array before mapping
+      const valuesToRender = Array.isArray(selectedValues) ? selectedValues : [selectedValues];
+  
+      return (
+        valuesToRender.length > 0 && (
+          <div key={filterKey}>
+            <h6>{filterKey.charAt(0).toUpperCase() + filterKey.slice(1)}:</h6>
+            <ul>
+              {valuesToRender.map((value, idx) => (
+                <li key={idx}>{value}</li>
+              ))}
+            </ul>
+          </div>
+        )
+      );
+    });
+  
+    return selectedFilterItems.length > 0 ? (
+      <div className="mb-3">
+        <h5 className="fw-bold">Selected Filters</h5>
+        {selectedFilterItems}
+      </div>
+    ) : null;
+  };
+
   return (
     <div className="p-3 border rounded shadow-sm">
+      {/* Display Selected Filters at the top */}
+      {renderSelectedFilters()}
+
       <h5 className="fw-bold mb-3">Filters</h5>
       <Accordion>
         {filterList.map((filter, index) => (
