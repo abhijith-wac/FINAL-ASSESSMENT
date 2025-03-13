@@ -13,7 +13,6 @@ const FilterSidebar = ({ filterList }) => {
 
   const [expandedCategories, setExpandedCategories] = useState({});
 
-  // ✅ Toggle "Show More / Show Less"
   const toggleShowMore = (category) => {
     setExpandedCategories((prev) => ({
       ...prev,
@@ -21,14 +20,10 @@ const FilterSidebar = ({ filterList }) => {
     }));
   };
 
-  console.log(selectedFilters);
-
-  // Render selected filters as a list
   const renderSelectedFilters = () => {
     const selectedFilterItems = Object.keys(selectedFilters).map((filterKey) => {
       const selectedValues = selectedFilters[filterKey];
   
-      // Ensure selectedValues is an array before mapping
       const valuesToRender = Array.isArray(selectedValues) ? selectedValues : [selectedValues];
   
       return (
@@ -55,7 +50,6 @@ const FilterSidebar = ({ filterList }) => {
 
   return (
     <div className="p-3 border rounded shadow-sm">
-      {/* Display Selected Filters at the top */}
       {renderSelectedFilters()}
 
       <h5 className="fw-bold mb-3">Filters</h5>
@@ -64,7 +58,6 @@ const FilterSidebar = ({ filterList }) => {
           <Accordion.Item eventKey={index} key={filter.attribute}>
             <Accordion.Header>{filter.label}</Accordion.Header>
             <Accordion.Body>
-              {/* ✅ Price Filter */}
               {filter.attribute === "price" ? (
                 <>
                   <Form.Group className="mb-3">
@@ -91,7 +84,6 @@ const FilterSidebar = ({ filterList }) => {
                   </Form.Group>
                 </>
               ) : (
-                // ✅ Checkbox Filters with "Show More / Show Less"
                 Array.isArray(filter.options) ? (
                   <>
                     {filter.options
