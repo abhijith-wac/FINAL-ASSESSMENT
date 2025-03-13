@@ -24,7 +24,7 @@ export const useFilters = (filterList = []) => {
         });
     }
 
-    // ✅ Handle Checkbox Change (Preserve filters)
+    // ✅ Handle Checkbox Change (Preserve filters & Reset Page)
     const handleCheckboxChange = (category, value) => {
         const newParams = new URLSearchParams(searchParams);
         const currentValues = newParams.getAll(category);
@@ -36,10 +36,13 @@ export const useFilters = (filterList = []) => {
             newParams.append(category, value);
         }
 
+        // ✅ Reset page to 1 when filters change
+        newParams.set("page", "1");
+
         setSearchParams(newParams);
     };
 
-    // ✅ Handle Price Change (Preserve All Filters)
+    // ✅ Handle Price Change (Preserve Filters & Reset Page)
     const handlePriceChange = (min, max) => {
         const newParams = new URLSearchParams(searchParams);
 
@@ -55,11 +58,14 @@ export const useFilters = (filterList = []) => {
             newParams.delete("max_price");
         }
 
+        // ✅ Reset page to 1 when price changes
+        newParams.set("page", "1");
+
         console.log("🔍 Updated searchParams:", newParams.toString());
         setSearchParams(newParams);
     };
 
-    // ✅ Remove a Specific Filter
+    // ✅ Remove a Specific Filter (Preserve Others & Reset Page)
     const handleRemoveFilter = (attribute, value) => {
         console.log("🔍 Removing:", attribute, value);
 
@@ -69,29 +75,34 @@ export const useFilters = (filterList = []) => {
             newParams.delete("min_price");
             newParams.delete("max_price");
         } else {
-            // Get all current values for this attribute
             const currentValues = searchParams.getAll(attribute);
             console.log("✅ Current values before:", currentValues);
 
-            // **BUG FIX**: Make sure to remove only the selected value
             const updatedValues = currentValues.filter((v) => v !== value);
             console.log("✅ Updated values after:", updatedValues);
 
-            // **Remove attribute if no values are left**
             newParams.delete(attribute);
             updatedValues.forEach((v) => newParams.append(attribute, v));
         }
+
+        // ✅ Reset page to 1 when a filter is removed
+        newParams.set("page", "1");
 
         console.log("🔄 Updated URL params:", newParams.toString());
         setSearchParams(newParams);
     };
 
-    // ✅ Clear All Filters (Except search query)
+    // ✅ Clear All Filters (Except search query & Reset Page)
     const clearAllFilters = () => {
         const newParams = new URLSearchParams();
+
         if (searchParams.get("query")) {
             newParams.set("query", searchParams.get("query"));
         }
+
+        // ✅ Reset page to 1 when all filters are cleared
+        newParams.set("page", "1");
+
         setSearchParams(newParams);
     };
 
@@ -99,7 +110,7 @@ export const useFilters = (filterList = []) => {
         selectedFilters,
         handleCheckboxChange,
         handlePriceChange,
-        handleRemoveFilter, // ✅ Use this for price filter click issue
+        handleRemoveFilter,
         clearAllFilters,
         searchParams,
         setSearchParams,
