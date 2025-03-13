@@ -21,14 +21,25 @@ const SearchBar = () => {
         setSearchParams(newParams);
     };
 
+    // ✅ Prevent form submission on Enter
+    const handleSubmit = (e) => {
+        e.preventDefault(); // Prevent page refresh or navigation
+    };
+
     return (
-        <Form className="d-flex align-items-center mb-4">
+        <Form onSubmit={handleSubmit} className="d-flex align-items-center mb-4">
             <Form.Control
                 type="text"
                 value={searchQuery}
                 onChange={(e) => {
                     setSearchQuery(e.target.value);
                     updateSearchParams("query", e.target.value);
+                }}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault(); // Prevent form submission
+                        e.target.blur(); // Remove focus from the input field
+                    }
                 }}
                 placeholder="Search for products..."
                 className="me-3"
