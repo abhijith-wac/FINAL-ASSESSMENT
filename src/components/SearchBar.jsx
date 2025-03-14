@@ -4,19 +4,21 @@ import { useSearchParams } from "react-router-dom";
 
 const SearchBar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("query") || ""
-  );
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("query") || "");
   const [language, setLanguage] = useState(searchParams.get("lang") || "en");
   const [sortBy, setSortBy] = useState(searchParams.get("sort_by") || "1");
 
-  const updateSearchParams = (key, value) => {
+  const updateSearchParams = (key, value, resetPage = false) => {
     const newParams = new URLSearchParams(searchParams);
 
     if (value) {
       newParams.set(key, value);
     } else {
       newParams.delete(key);
+    }
+
+    if (resetPage) {
+      newParams.set("page", "1"); // Reset page to 1
     }
 
     setSearchParams(newParams);
@@ -50,7 +52,7 @@ const SearchBar = () => {
         value={language}
         onChange={(e) => {
           setLanguage(e.target.value);
-          updateSearchParams("lang", e.target.value);
+          updateSearchParams("lang", e.target.value, true); // Reset page on language change
         }}
         className="me-3"
         style={{ width: "150px" }}
