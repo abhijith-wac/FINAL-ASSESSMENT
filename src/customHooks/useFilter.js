@@ -3,7 +3,6 @@ import { useSearchParams } from "react-router-dom";
 export const useFilters = (filterList = []) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-<<<<<<< HEAD
   const selectedFilters = [];
   filterList.forEach((filter) => {
     const selectedValues = searchParams.getAll(filter.attribute);
@@ -26,13 +25,6 @@ export const useFilters = (filterList = []) => {
       attribute: "price",
     });
   }
-=======
-  const selectedFilters = Object.fromEntries(
-    Array.from(searchParams.entries()).filter(
-      ([key]) => key !== "query" && key !== "page"
-    )
-  );
->>>>>>> 200cedc (vite)
 
   const handleCheckboxChange = (category, value) => {
     const newParams = new URLSearchParams(searchParams);
@@ -54,8 +46,6 @@ export const useFilters = (filterList = []) => {
 
   const handlePriceChange = (min, max) => {
     const newParams = new URLSearchParams(searchParams);
-
-<<<<<<< HEAD
     if (min != null) {
       newParams.set("min_price", String(min));
     } else {
@@ -68,16 +58,6 @@ export const useFilters = (filterList = []) => {
     }
 
     newParams.set("page", "1");
-=======
-    for (const [key, value] of searchParams.entries()) {
-      if (key !== "min_price" && key !== "max_price") {
-        newParams.append(key, value);
-      }
-    }
-
-    if (min !== null) newParams.set("min_price", min);
-    if (max !== null) newParams.set("max_price", max);
->>>>>>> 200cedc (vite)
 
     console.log("🔍 Updated searchParams:", newParams.toString());
     setSearchParams(newParams);
