@@ -1,118 +1,113 @@
 import { useSearchParams } from "react-router-dom";
 
 export const useFilters = (filterList = []) => {
-    const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-    // ✅ Extract selected filters dynamically
-    const selectedFilters = [];
-    filterList.forEach((filter) => {
-        const selectedValues = searchParams.getAll(filter.attribute);
-        selectedValues.forEach((value) => {
-            selectedFilters.push({ category: filter.label, value, attribute: filter.attribute });
-        });
+  const selectedFilters = [];
+  filterList.forEach((filter) => {
+    const selectedValues = searchParams.getAll(filter.attribute);
+    selectedValues.forEach((value) => {
+      selectedFilters.push({
+        category: filter.label,
+        value,
+        attribute: filter.attribute,
+      });
     });
+  });
 
-    // ✅ Ensure Price is tracked as a selected filter
-    const minPrice = searchParams.get("min_price");
-    const maxPrice = searchParams.get("max_price");
+  const minPrice = searchParams.get("min_price");
+  const maxPrice = searchParams.get("max_price");
 
-    if (minPrice || maxPrice) {
-        selectedFilters.push({
-            category: "Price",
-            value: `KWD ${minPrice || "0"} - KWD ${maxPrice || "Max"}`,
-            attribute: "price",
-        });
+  if (minPrice || maxPrice) {
+    selectedFilters.push({
+      category: "Price",
+      value: `KWD ${minPrice || "0"} - KWD ${maxPrice || "Max"}`,
+      attribute: "price",
+    });
+  }
+
+  const handleCheckboxChange = (category, value) => {
+    const newParams = new URLSearchParams(searchParams);
+    const currentValues = newParams.getAll(category);
+
+    if (currentValues.includes(value)) {
+      newParams.delete(category);
+      currentValues
+        .filter((v) => v !== value)
+        .forEach((v) => newParams.append(category, v));
+    } else {
+      newParams.append(category, value);
     }
 
-    // ✅ Handle Checkbox Change (Preserve filters & Reset Page)
-    const handleCheckboxChange = (category, value) => {
-        const newParams = new URLSearchParams(searchParams);
-        const currentValues = newParams.getAll(category);
+    newParams.set("page", "1");
 
-        if (currentValues.includes(value)) {
-            newParams.delete(category);
-            currentValues.filter((v) => v !== value).forEach((v) => newParams.append(category, v));
-        } else {
-            newParams.append(category, value);
-        }
+    setSearchParams(newParams);
+  };
 
-        // ✅ Reset page to 1 when filters change
-        newParams.set("page", "1");
+  const handlePriceChange = (min, max) => {
+    const newParams = new URLSearchParams(searchParams);
 
-        setSearchParams(newParams);
-    };
+    if (min != null) {
+      newParams.set("min_price", String(min));
+    } else {
+      newParams.delete("min_price");
+    }
+    if (max != null) {
+      newParams.set("max_price", String(max));
+    } else {
+      newParams.delete("max_price");
+    }
 
-    // ✅ Handle Price Change (Preserve Filters & Reset Page)
-    const handlePriceChange = (min, max) => {
-        const newParams = new URLSearchParams(searchParams);
+    newParams.set("page", "1");
 
-        if (min != null) {
-            newParams.set("min_price", String(min));
-        } else {
-            newParams.delete("min_price");
-        }
+    console.log("🔍 Updated searchParams:", newParams.toString());
+    setSearchParams(newParams);
+  };
 
-        if (max != null) {
-            newParams.set("max_price", String(max));
-        } else {
-            newParams.delete("max_price");
-        }
+  const handleRemoveFilter = (attribute, value) => {
+    console.log("🔍 Removing:", attribute, value);
 
-        // ✅ Reset page to 1 when price changes
-        newParams.set("page", "1");
+    const newParams = new URLSearchParams(searchParams);
 
-        console.log("🔍 Updated searchParams:", newParams.toString());
-        setSearchParams(newParams);
-    };
+    if (attribute === "price") {
+      newParams.delete("min_price");
+      newParams.delete("max_price");
+    } else {
+      const currentValues = searchParams.getAll(attribute);
+      console.log("✅ Current values before:", currentValues);
 
-    // ✅ Remove a Specific Filter (Preserve Others & Reset Page)
-    const handleRemoveFilter = (attribute, value) => {
-        console.log("🔍 Removing:", attribute, value);
+      const updatedValues = currentValues.filter((v) => v !== value);
+      console.log("✅ Updated values after:", updatedValues);
 
-        const newParams = new URLSearchParams(searchParams);
+      newParams.delete(attribute);
+      updatedValues.forEach((v) => newParams.append(attribute, v));
+    }
 
-        if (attribute === "price") {
-            newParams.delete("min_price");
-            newParams.delete("max_price");
-        } else {
-            const currentValues = searchParams.getAll(attribute);
-            console.log("✅ Current values before:", currentValues);
+    newParams.set("page", "1");
 
-            const updatedValues = currentValues.filter((v) => v !== value);
-            console.log("✅ Updated values after:", updatedValues);
+    console.log("🔄 Updated URL params:", newParams.toString());
+    setSearchParams(newParams);
+  };
 
-            newParams.delete(attribute);
-            updatedValues.forEach((v) => newParams.append(attribute, v));
-        }
+  const clearAllFilters = () => {
+    const newParams = new URLSearchParams();
 
-        // ✅ Reset page to 1 when a filter is removed
-        newParams.set("page", "1");
+    if (searchParams.get("query")) {
+      newParams.set("query", searchParams.get("query"));
+    }
 
-        console.log("🔄 Updated URL params:", newParams.toString());
-        setSearchParams(newParams);
-    };
+    newParams.set("page", "1");
 
-    // ✅ Clear All Filters (Except search query & Reset Page)
-    const clearAllFilters = () => {
-        const newParams = new URLSearchParams();
+    setSearchParams(newParams);
+  };
 
-        if (searchParams.get("query")) {
-            newParams.set("query", searchParams.get("query"));
-        }
-
-        // ✅ Reset page to 1 when all filters are cleared
-        newParams.set("page", "1");
-
-        setSearchParams(newParams);
-    };
-
-    return {
-        selectedFilters,
-        handleCheckboxChange,
-        handlePriceChange,
-        handleRemoveFilter,
-        clearAllFilters,
-        searchParams,
-        setSearchParams,
-    };
+  return {
+    selectedFilters,
+    handleCheckboxChange,
+    handlePriceChange,
+    handleRemoveFilter,
+    clearAllFilters,
+    searchParams,
+    setSearchParams,
+  };
 };

@@ -5,7 +5,6 @@ import SelectedFilters from "./SelectedFilters";
 import { useFilters } from "../customHooks/useFilter";
 
 const FilterSidebar = ({ filterList = [] }) => {
-    // ✅ Ensure filterList is always an array
     const { selectedFilters, handleCheckboxChange, handlePriceChange, searchParams, clearAllFilters, handleRemoveFilter } =
         useFilters(filterList);
 
@@ -22,7 +21,6 @@ const FilterSidebar = ({ filterList = [] }) => {
         <div className="p-3 border rounded shadow-sm">
             <h5 className="fw-bold mb-3">Filters</h5>
 
-            {/* ✅ Selected Filters Section */}
             <SelectedFilters
                 selectedFilters={selectedFilters}
                 handleRemoveFilter={handleRemoveFilter}

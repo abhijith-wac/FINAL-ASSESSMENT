@@ -1,11 +1,11 @@
-import React from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const searchQuery = searchParams.get('query') || ''; // Get query from URL
+  const searchQuery = searchParams.get("query") || "";
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -20,12 +20,16 @@ const Home = () => {
       <form onSubmit={handleSearch} className="w-50 d-flex">
         <input
           type="text"
-          defaultValue={searchQuery} // Use defaultValue to avoid controlled component issues
-          onChange={(e) => setSearchParams({ query: e.target.value }, { replace: true })} // Update URL params instantly
+          defaultValue={searchQuery}
+          onChange={(e) =>
+            setSearchParams({ query: e.target.value }, { replace: true })
+          }
           placeholder="Search for products..."
           className="form-control me-2"
         />
-        <button type="submit" className="btn btn-primary">Search</button>
+        <button type="submit" className="btn btn-primary">
+          Search
+        </button>
       </form>
     </div>
   );
