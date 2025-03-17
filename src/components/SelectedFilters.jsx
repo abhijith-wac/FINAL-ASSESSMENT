@@ -18,7 +18,7 @@ const SelectedFilters = ({
             onClick={() => handleRemoveFilter(filter.attribute, filter.value)}
             style={{ cursor: "pointer", color: "red", marginRight: "8px" }}
           >
-            {filter.value} ❌
+           <small> {filter.value} ❌ </small>
           </span>
         ))}
       </div>

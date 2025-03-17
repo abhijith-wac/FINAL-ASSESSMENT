@@ -1,7 +1,9 @@
 import { useSearchParams } from "react-router-dom";
+import { useState } from "react";
 
 export const useFilters = (filterList = []) => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [expandedFilters, setExpandedFilters] = useState({});
 
   const selectedFilters = [];
   filterList.forEach((filter) => {
@@ -58,33 +60,22 @@ export const useFilters = (filterList = []) => {
     }
 
     newParams.set("page", "1");
-
-    console.log("🔍 Updated searchParams:", newParams.toString());
     setSearchParams(newParams);
   };
 
   const handleRemoveFilter = (attribute, value) => {
-    console.log("🔍 Removing:", attribute, value);
-
     const newParams = new URLSearchParams(searchParams);
 
     if (attribute === "price") {
       newParams.delete("min_price");
       newParams.delete("max_price");
     } else {
-      const currentValues = searchParams.getAll(attribute);
-      console.log("✅ Current values before:", currentValues);
-
-      const updatedValues = currentValues.filter((v) => v !== value);
-      console.log("✅ Updated values after:", updatedValues);
-
+      const updatedValues = searchParams.getAll(attribute).filter((v) => v !== value);
       newParams.delete(attribute);
       updatedValues.forEach((v) => newParams.append(attribute, v));
     }
 
     newParams.set("page", "1");
-
-    console.log("🔄 Updated URL params:", newParams.toString());
     setSearchParams(newParams);
   };
 
@@ -100,6 +91,13 @@ export const useFilters = (filterList = []) => {
     setSearchParams(newParams);
   };
 
+  const toggleShowMore = (attribute) => {
+    setExpandedFilters((prev) => ({
+      ...prev,
+      [attribute]: !prev[attribute],
+    }));
+  };
+
   return {
     selectedFilters,
     handleCheckboxChange,
@@ -108,5 +106,7 @@ export const useFilters = (filterList = []) => {
     clearAllFilters,
     searchParams,
     setSearchParams,
+    expandedFilters,
+    toggleShowMore, 
   };
 };

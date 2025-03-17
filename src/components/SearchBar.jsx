@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import { Form } from "react-bootstrap";
 import { useSearchParams } from "react-router-dom";
 
 const SearchBar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("query") || "");
-  const [language, setLanguage] = useState(searchParams.get("lang") || "en");
-  const [sortBy, setSortBy] = useState(searchParams.get("sort_by") || "1");
+
+  const searchQuery = searchParams.get("query") || "";
+  const language = searchParams.get("lang") || "en";
+  const sortBy = searchParams.get("sort_by") || "1";
 
   const updateSearchParams = (key, value, resetPage = false) => {
     const newParams = new URLSearchParams(searchParams);
+
+    if (key === "query" && !value.trim()) return;
 
     if (value) {
       newParams.set(key, value);
@@ -18,28 +21,23 @@ const SearchBar = () => {
     }
 
     if (resetPage) {
-      newParams.set("page", "1"); // Reset page to 1
+      newParams.set("page", "1");
     }
 
     setSearchParams(newParams);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
-
   return (
-    <Form onSubmit={handleSubmit} className="d-flex align-items-center mb-4">
+    <Form className="d-flex align-items-center mb-4">
+      {/* Search Input */}
       <Form.Control
         type="text"
         value={searchQuery}
-        onChange={(e) => {
-          setSearchQuery(e.target.value);
-          updateSearchParams("query", e.target.value);
-        }}
+        onChange={(e) => updateSearchParams("query", e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
+            updateSearchParams("query", searchQuery);
             e.target.blur();
           }
         }}
@@ -48,12 +46,10 @@ const SearchBar = () => {
         style={{ width: "300px" }}
       />
 
+      {/* Language Select */}
       <Form.Select
         value={language}
-        onChange={(e) => {
-          setLanguage(e.target.value);
-          updateSearchParams("lang", e.target.value, true); // Reset page on language change
-        }}
+        onChange={(e) => updateSearchParams("lang", e.target.value, true)}
         className="me-3"
         style={{ width: "150px" }}
       >
@@ -61,12 +57,10 @@ const SearchBar = () => {
         <option value="ar">Arabic</option>
       </Form.Select>
 
+      {/* Sort By Select */}
       <Form.Select
         value={sortBy}
-        onChange={(e) => {
-          setSortBy(e.target.value);
-          updateSearchParams("sort_by", e.target.value);
-        }}
+        onChange={(e) => updateSearchParams("sort_by", e.target.value)}
         className="me-3"
         style={{ width: "150px" }}
       >
