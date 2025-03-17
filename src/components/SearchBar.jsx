@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import { useSearchParams } from "react-router-dom";
 
 const SearchBar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const searchQuery = searchParams.get("query") || "";
+  // Initialize state directly from searchParams
+  const lastQuery = searchParams.get("query") || "";
+  const [searchQuery, setSearchQuery] = useState(lastQuery);
   const language = searchParams.get("lang") || "en";
   const sortBy = searchParams.get("sort_by") || "1";
 
   const updateSearchParams = (key, value, resetPage = false) => {
     const newParams = new URLSearchParams(searchParams);
 
-    if (key === "query" && !value.trim()) return;
+    if (key === "query") {
+      if (!value.trim()) {
+        setSearchQuery(lastQuery); // Revert to last searched term if cleared
+        return;
+      }
+      setSearchQuery(value); // Update input field
+    }
 
     if (value) {
       newParams.set(key, value);
@@ -21,7 +29,7 @@ const SearchBar = () => {
     }
 
     if (resetPage) {
-      newParams.set("page", "1");
+      newParams.set("page", "1"); // Reset to first page on language change
     }
 
     setSearchParams(newParams);
@@ -33,7 +41,8 @@ const SearchBar = () => {
       <Form.Control
         type="text"
         value={searchQuery}
-        onChange={(e) => updateSearchParams("query", e.target.value)}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        onBlur={() => updateSearchParams("query", searchQuery)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
@@ -49,7 +58,7 @@ const SearchBar = () => {
       {/* Language Select */}
       <Form.Select
         value={language}
-        onChange={(e) => updateSearchParams("lang", e.target.value, true)}
+        onChange={(e) => updateSearchParams("lang", e.target.value, true)} // Reset page on language change
         className="me-3"
         style={{ width: "150px" }}
       >

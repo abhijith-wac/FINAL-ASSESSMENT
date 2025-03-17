@@ -9,10 +9,12 @@ const fetcher = async ([
   maxPrice,
   lang,
   filter,
+  page,
 ]) => {
   const requestBody = {
     search: query,
-    size: 80,
+    size: 80, 
+    page, 
     sort_by: sortBy,
     lang,
     filter: filter ? JSON.parse(filter) : {},
@@ -47,7 +49,7 @@ const fetcher = async ([
 const useSearch = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("query") || "";
-
+  const page = parseInt(searchParams.get("page")) || 1; 
   const filter = {};
   let sortBy = "1";
 
@@ -82,12 +84,14 @@ const useSearch = () => {
           maxPrice,
           lang,
           JSON.stringify(filter),
+          page, 
         ]
       : null;
 
   return useSWR(key, fetcher, {
     revalidateOnFocus: false,
-    keepPreviousData: true,
+    keepPreviousData: true, 
+    dedupingInterval: 60000, 
   });
 };
 
